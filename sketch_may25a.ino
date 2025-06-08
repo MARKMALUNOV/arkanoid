@@ -7,15 +7,18 @@ int ballX = 4;
 int ballY = 13;
 int dirX = 1;
 int dirY = -1;
+
+
 void setup() {
   gb.begin(15);
+  drawBricks(Block_level_1);
 
 }
 void loop() {                               //Головна Частина
   ball();
   makePaddle();
   drawPaddle(paddle, paddleX, paddleY);
-  delay(200);
+  delay(150);
   gb.drawDisplay();
 
 }
@@ -35,17 +38,41 @@ void makePaddle() {                         //Рух Платформи
     paddleX ++;
   }
 }
-void ball(){
+void ball() {
   ballX += dirX;
   ballY += dirY;
+  checkCollision();
+  gb.drawPoint(ballX, ballY);
+}
 
-  if (ballX <= 0 || ballX >=7) dirX = - dirX;
-  if (ballY <= 0 || ballY >=15) dirY = - dirY;
-  
-  if (ballY = paddleY - 1 && ballX >= paddleX && ballX<= ballX <= paddleX + 3){
-    dirY = +1;
+
+
+void checkCollision() {
+  if (ballX <= 0 || ballX >= 7) dirX = - dirX;
+  if (ballY <= 0 || ballY >= 15) dirY = - dirY;
+
+  if (ballY == paddleY - 1 && ballX <= paddleX + 3) {
+    dirY = -1;
+  }
+  if (gb.checkCollision(ballX, ballY)) {
+    gb.wipePoint(ballX, ballY);
+    dirY = 1;
+    gb.sound(SCORE);
+  }
+}
+void drawBricks(byte arr [4][8]) {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (arr[i][j] == 1) {
+        gb.memDisplay(j, i);
+      }
     }
-  
-  gb.drawPoint(ballX,ballY);
-
-} 
+  }
+}
+void memClear() {
+  for (int i = 0; i < 4; i++) {
+    for (int j = 0; j < 8; j++) {
+      gb.display[j][i] = 0;
+    }
+  }
+}
